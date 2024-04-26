@@ -656,11 +656,11 @@ func (child *partitionConsumer) parseMessages(msgSet *MessageSet) ([]*ConsumerMe
 func (child *partitionConsumer) parseRecords(batch *RecordBatch) ([]*ConsumerMessage, error) {
 	messages := make([]*ConsumerMessage, 0, len(batch.Records))
 
-	Logger.Println("rick-1", batch.FirstOffset, child.offset)
+	Logger.Println("rick-1", child.topic, child.partition, batch.FirstOffset, child.offset)
 	for _, rec := range batch.Records {
 		offset := batch.FirstOffset + rec.OffsetDelta
 		if offset < child.offset {
-			Logger.Println("rick-2", offset, child.offset)
+			Logger.Println("rick-2", child.topic, child.partition, offset, child.offset)
 			continue
 		}
 		timestamp := batch.FirstTimestamp.Add(rec.TimestampDelta)
@@ -677,13 +677,13 @@ func (child *partitionConsumer) parseRecords(batch *RecordBatch) ([]*ConsumerMes
 			Headers:   rec.Headers,
 		})
 		child.offset = offset + 1
-		Logger.Println("rick-3", offset, child.offset)
+		Logger.Println("rick-3", child.topic, child.partition, offset, child.offset)
 	}
 	if len(messages) == 0 {
 		child.offset++
-		Logger.Println("rick-5", child.offset)
+		Logger.Println("rick-5", child.topic, child.partition, child.offset)
 	}
-	Logger.Println("rick-4", child.offset)
+	Logger.Println("rick-4", child.topic, child.partition, child.offset)
 	return messages, nil
 }
 
